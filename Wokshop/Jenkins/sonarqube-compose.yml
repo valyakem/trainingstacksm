@@ -1,0 +1,32 @@
+version: "3.2"
+
+services:
+  sonarqube:
+    image: sonarqube
+    ports:
+      - "9001:9000"
+    networks:
+      - backend
+    environment:
+      - SONARQUBE_JDBC_URL=jdbc:postgresql://db:5432/sonar
+    volumes:
+      - /docker/sonarqube/conf:/opt/sonarqube/conf
+      - /docker/sonarqube/data:/opt/sonarqube/data
+      - /docker/sonarqube/extensions:/opt/sonarqube/extensions
+      - /docker/sonarqube/bundled-plugins:/opt/sonarqube/lib/bundled-plugins
+
+  db:
+    image: postgres
+    networks:
+      - backend
+    environment:
+      - POSTGRES_USER=sonar
+      - POSTGRES_PASSWORD=sonar
+    volumes:
+      - /docker/sonarqube/postgresql:/var/lib/postgresql
+      - /docker/sonarqube/postgresql/data:/var/lib/postgresql/data
+
+networks:
+  backend:
+    external:
+      name: {environment}
